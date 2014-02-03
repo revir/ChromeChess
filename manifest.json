@@ -1,0 +1,31 @@
+{
+    "manifest_version": 2,
+    "name": "ChromeChess",
+    "description": "chrome chess",
+    "permissions": [{
+        "socket": [
+            "tcp-connect:*:8777",
+            "tcp-listen:*:8776"
+        ]
+    }],
+    "background": {
+        "persistent": true,
+        "scripts": [
+            "core.js", 
+            "rpc.js"
+        ]
+    },
+
+    "browser_action":{
+        "default_icon": {
+            "24": "img/chess-24.png",    
+            "32": "img/chess-32.png"  
+        }
+    },
+    "icons": {
+      "48": "img/chess-48.png"
+    },   
+    "minimum_chrome_version": "23",
+    "version": "1.0",
+    "update_url": "http://clients2.google.com/service/update2/crx"
+}

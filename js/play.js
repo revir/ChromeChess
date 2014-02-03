@@ -42,50 +42,6 @@ play.init = function (myRole){
 		}
 	}
 	play.show();
-	
-	//绑定点击事件
-	com.canvas.addEventListener("click",play.clickCanvas)
-	//clearInterval(play.timer);
-	//com.get("autoPlay").addEventListener("click", function(e) {
-		//clearInterval(play.timer);
-		//play.timer = setInterval("play.AIPlay()",1000);
-	//	play.AIPlay()
-	//})
-	/*
-	com.get("offensivePlay").addEventListener("click", function(e) {
-		play.isOffensive=true;
-		play.isPlay=true ;	
-		com.get("chessRight").style.display = "none";
-		play.init();
-	})
-	
-	com.get("defensivePlay").addEventListener("click", function(e) {
-		play.isOffensive=false;
-		play.isPlay=true ;	
-		com.get("chessRight").style.display = "none";
-		play.init();
-	})
-	*/
-	
-	
-	com.get("regretBn").addEventListener("click", function(e) {
-		play.regret();
-	})
-	
-	/*
-	var initTime = new Date().getTime();
-	for (var i=0; i<=100000; i++){
-		
-		var h=""
-		var h=play.map.join();
-		//for (var n in play.mans){
-		//	if (play.mans[n].show) h+=play.mans[n].key+play.mans[n].x+play.mans[n].y
-		//}
-	}
-	var nowTime= new Date().getTime();
-	z([h,nowTime-initTime])
-	*/
-	
 }
 
 
@@ -186,7 +142,7 @@ play.clickMan = function (key,x,y){
 		}
 	// 选中棋子
 	}else{
-		if (man.my===1){
+		if (man.role === play.myRole){
 			if (com.mans[play.nowManKey]) com.mans[play.nowManKey].alpha = 1 ;
 			man.alpha = 0.6;
 			com.pane.isShow = false;

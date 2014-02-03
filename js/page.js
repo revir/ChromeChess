@@ -38,6 +38,8 @@ $(document).click(function(e){
         //     com.show();
         //     if (i++>=5) clearInterval(timer);
         // },2000);
+    } else if(target.is('#chess')){
+        play.clickCanvas(e);
     }
 });
     
