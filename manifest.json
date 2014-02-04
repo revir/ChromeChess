@@ -18,7 +18,8 @@
     },
     "icons": {
         "16": "img/chess_16.png", 
-        "64": "img/chess_64.png" 
+        "64": "img/chess_64.png",
+        "128": "img/chess_128.png"
     },
    
     "minimum_chrome_version": "23",
