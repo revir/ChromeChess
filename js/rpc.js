@@ -1,22 +1,33 @@
 var rpc = {};
 rpc.socketId = null;
-
-rpc.onConnectedCallback = function(result) {
-
+rpc.hooks = {};
+rpc._onConnectedCallback = function(result) {
+    console.log('_onConnectedCallback');
+    if(rpc.hooks.onConnectedCallback){
+        rpc.hooks.onConnectedCallback(acceptInfo);
+    }
 };
 
-rpc.onSocketAcceptedCallback = function(acceptInfo){
-
+rpc._onSocketAcceptedCallback = function(acceptInfo){
+    console.log('_onSocketAcceptedCallback');
+    if(rpc.hooks.onSocketAcceptedCallback){
+        rpc.hooks.onSocketAcceptedCallback(acceptInfo);
+    }
 };
 
-rpc.onCreatedServerCallback = function(result){
-    chrome.socket.accept(rpc.socketId, onSocketAcceptedCallback);
+rpc._onCreatedServerCallback = function(result){
+    console.log('_onCreatedServerCallback');
+    chrome.socket.accept(rpc.socketId, rpc._onSocketAcceptedCallback);
+    if(rpc.hooks.onCreatedServerCallback){
+        rpc.hooks.onCreatedServerCallback(result);
+    }
 };
 
-rpc.connect = function(ip, port) {
+rpc.connect = function(ip, port, onConnectedCallback) {
+    rpc.hooks.onConnectedCallback = onConnectedCallback;
     chrome.socket.create('tcp', {}, function(createInfo) {
         rpc.socketId = createInfo.socketId;
-        chrome.socket.connect(createInfo.socketId, ip, port, onConnectedCallback);
+        chrome.socket.connect(createInfo.socketId, ip, port, rpc._onConnectedCallback);
     });
 };
 
@@ -37,11 +48,13 @@ rpc.disconnect = function() {
     }
 };
 
-rpc.createServer = function(ip, port) {
+rpc.createServer = function(ip, port, onCreatedServerCallback, onSocketAcceptedCallback) {
+    rpc.hooks.onCreatedServerCallback = onCreatedServerCallback;
+    rpc.hooks.onSocketAcceptedCallback = onSocketAcceptedCallback;
     if (!rpc.socketId) {
         chrome.socket.create('tcp', {}, function(createInfo) {
             rpc.socketId = createInfo.socketId;
-            chrome.socket.listen(rpc.socketId, ip, port, onCreatedServerCallback);
+            chrome.socket.listen(rpc.socketId, ip, port, rpc._onCreatedServerCallback);
         });
     } else {
         //TODO:

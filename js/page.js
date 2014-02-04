@@ -14,15 +14,19 @@ window.onload = function(){
 $(document).click(function(e){
     var target = $(e.target);
     if(target.is('#startServer')){
-        if (confirm("确认StartServer？")){
-            // play.isPlay=true ;   
+        rpc.createServer('127.0.0.1', 8776, function onCreatedServerCallback(result){
             play.init('red');
-        }
+        }, function onSocketAcceptedCallback(acceptInfo){
+            alert('onSocketAcceptedCallback');
+        });
     } else if(target.is('#connectServer')){
         $('#connect-modal').modal();
     } else if(target.is('#startConnect')){
         $('#connect-modal').modal('hide');
-        play.init('black');
+        rpc.connect('127.0.0.1', 8776, function(result){
+            play.init('black');
+        });
+        
     } else if(target.is('#stypeBn')){
         // var stype =com.nowStype;
         // if (stype=="stype1") stype="stype2";
