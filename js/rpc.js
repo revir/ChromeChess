@@ -10,6 +10,7 @@ rpc._onConnectedCallback = function(result) {
 
 rpc._onSocketAcceptedCallback = function(acceptInfo){
     console.log('_onSocketAcceptedCallback');
+    rpc.socketId = acceptInfo.socketId;
     if(rpc.hooks.onSocketAcceptedCallback){
         rpc.hooks.onSocketAcceptedCallback(acceptInfo);
     }

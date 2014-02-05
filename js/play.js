@@ -51,7 +51,9 @@ play.waitForCompetitor = function(){
 	rpc.read(function(data) {
 		$('.pinfo').text(JSON.stringify(data));
 		if(data.type === 'move'){
-			play.moveChess(data.nowManKey, data.x, data.y);
+			var newX = 8 - data.x;
+			var newY = 9 - data.y;
+			play.moveChess(data.nowManKey, newX, newY);
 		}
 	});
 };
