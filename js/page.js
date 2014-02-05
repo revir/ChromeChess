@@ -15,7 +15,7 @@ function onSocketAcceptedCallback(acceptInfo) {
     $('.pinfo').text("对手已加入， 红方先手!");
     play.currentPlayer = 'red';
     $('.pinfo').text(play.currentPlayer);
-    if(play.myRole !== play.currentPlayer){
+    if (play.myRole !== play.currentPlayer) {
         play.waitForCompetitor();
     }
 }
@@ -25,25 +25,27 @@ function onCreatedServerCallback(result) {
     $('.pinfo').text("棋局已摆好， 等待对手加入...");
 }
 
-function onConnectedToServerCallback(result){
-    $('.pinfo').text("已加入棋局， 红方先手!");
-    play.init('black');
-    play.currentPlayer = 'red';
-    $('.pinfo').text(play.currentPlayer);
-    if(play.myRole !== play.currentPlayer){
-        play.waitForCompetitor();
-    }
+function onConnectedToServerCallback(result) {
+    // if (result > 0) {
+        $('.pinfo').text("已加入棋局， 红方先手!");
+        play.init('black');
+        play.currentPlayer = 'red';
+        $('.pinfo').text(play.currentPlayer);
+        if (play.myRole !== play.currentPlayer) {
+            play.waitForCompetitor();
+        }
+    // }
 }
 
 $(document).click(function(e) {
     var target = $(e.target);
     if (target.is('#startServer')) {
-        rpc.createServer('127.0.0.1', 8776, onCreatedServerCallback, onSocketAcceptedCallback);
+        rpc.createServer('0.0.0.0', 8776, onCreatedServerCallback, onSocketAcceptedCallback);
     } else if (target.is('#connectServer')) {
         $('#connect-modal').modal();
     } else if (target.is('#startConnect')) {
         $('#connect-modal').modal('hide');
-        rpc.connect('127.0.0.1', 8776, onConnectedToServerCallback);
+        rpc.connect('192.168.1.105', 8776, onConnectedToServerCallback);
     } else if (target.is('#disconnect')) {
         rpc.disconnect();
         alert('disconnect');

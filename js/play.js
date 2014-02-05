@@ -12,7 +12,7 @@ play.init = function(myRole) {
 	play.myRole = myRole;
 	var a2 = com.initMap;
 	play.competitor = 'black';
-	if(myRole === 'black'){
+	if (myRole === 'black') {
 		a2 = com.initMapBlackRole;
 		play.competitor = 'red';
 	}
@@ -28,7 +28,7 @@ play.init = function(myRole) {
 	play.showPane = com.showPane;
 	play.isOffensive = true; //是否先手
 	play.depth = play.depth || 3; //搜索深度
-	play.currentPlayer = null;  //current player, black or red;
+	play.currentPlayer = null; //current player, black or red;
 
 	play.isFoul = false; //是否犯规长将
 
@@ -50,16 +50,20 @@ play.init = function(myRole) {
 	play.show();
 };
 
-play.waitForCompetitor = function(){
+play.waitForCompetitor = function() {
 	rpc.read(function(data) {
 		$('.pinfo').text(JSON.stringify(data));
-		if(data.type === 'move'){
-			var newX = 8 - data.x;
-			var newY = 9 - data.y;
+		var newX = 8 - data.x;
+		var newY = 9 - data.y;
+		if (data.type === 'move') {
 			play.moveChess(data.nowManKey, newX, newY);
-			play.currentPlayer = play.myRole;
-			$('.pinfo').text(play.currentPlayer);
+
+		} else if (data.type === 'eat') {
+			play.eatChess(data.nowManKey, data.key, newX, newY);
 		}
+
+		play.currentPlayer = play.myRole;
+		$('.pinfo').text(play.currentPlayer);
 	});
 };
 
@@ -126,34 +130,53 @@ play.clickCanvas = function(e) {
 		play.clickPoint(x, y);
 	}
 	play.isFoul = play.checkFoul(); //检测是不是长将
-}
+};
+
+play.eatChess = function(nowManKey, key, x, y){
+	//man为被吃掉的棋子
+	var man = com.mans[key];
+	play.nowManKey = nowManKey;
+	man.isShow = false;
+	var pace = com.mans[play.nowManKey].x + "" + com.mans[play.nowManKey].y
+	//z(bill.createMove(play.map,man.x,man.y,x,y))
+	delete play.map[com.mans[play.nowManKey].y][com.mans[play.nowManKey].x];
+	play.map[y][x] = play.nowManKey;
+	com.showPane(com.mans[play.nowManKey].x, com.mans[play.nowManKey].y, x, y)
+	com.mans[play.nowManKey].x = x;
+	com.mans[play.nowManKey].y = y;
+	com.mans[play.nowManKey].alpha = 1;
+
+	play.pace.push(pace + x + y);
+	play.nowManKey = false;
+	com.pane.isShow = false;
+	com.dot.dots = [];
+	com.show();
+	com.get("clickAudio").play();
+	if (play.myRole === play.currentPlayer) {
+		rpc.write({
+			type: 'eat',
+			nowManKey: nowManKey,
+			key: key,
+			x: x,
+			y: y
+		});
+	}
+	// setTimeout("play.AIPlay()", 500);
+	// if (key == "j0") play.showWin(-1);
+	// if (key == "J0") play.showWin(1);
+};
 
 //点击棋子，两种情况，选中或者吃子
 play.clickMan = function(key, x, y) {
 	var man = com.mans[key];
 	//吃子
 	if (play.nowManKey && play.nowManKey != key && man.my != com.mans[play.nowManKey].my) {
-		//man为被吃掉的棋子
 		if (play.indexOfPs(com.mans[play.nowManKey].ps, [x, y])) {
-			man.isShow = false;
-			var pace = com.mans[play.nowManKey].x + "" + com.mans[play.nowManKey].y
-			//z(bill.createMove(play.map,man.x,man.y,x,y))
-			delete play.map[com.mans[play.nowManKey].y][com.mans[play.nowManKey].x];
-			play.map[y][x] = play.nowManKey;
-			com.showPane(com.mans[play.nowManKey].x, com.mans[play.nowManKey].y, x, y)
-			com.mans[play.nowManKey].x = x;
-			com.mans[play.nowManKey].y = y;
-			com.mans[play.nowManKey].alpha = 1;
-
-			play.pace.push(pace + x + y);
-			play.nowManKey = false;
-			com.pane.isShow = false;
-			com.dot.dots = [];
-			com.show();
-			com.get("clickAudio").play();
-			setTimeout("play.AIPlay()", 500);
-			if (key == "j0") play.showWin(-1);
-			if (key == "J0") play.showWin(1);
+			if (play.currentPlayer === play.myRole) {
+				play.eatChess(play.nowManKey, key, x, y);
+				play.currentPlayer = play.competitor;
+				play.waitForCompetitor();
+			}
 		}
 		// 选中棋子
 	} else {
@@ -171,6 +194,7 @@ play.clickMan = function(key, x, y) {
 	}
 }
 
+//Just move the chess, no eat
 play.moveChess = function(nowManKey, x, y) {
 	var key = nowManKey;
 	var man = com.mans[key];
@@ -186,13 +210,14 @@ play.moveChess = function(nowManKey, x, y) {
 	com.dot.dots = [];
 	com.show();
 	com.get("clickAudio").play();
-
-	rpc.write({
-		type: 'move',
-		nowManKey: key,
-		x: x,
-		y: y
-	});
+	if (play.currentPlayer === play.myRole) {
+		rpc.write({
+			type: 'move',
+			nowManKey: key,
+			x: x,
+			y: y
+		});
+	}
 };
 
 //点击着点
