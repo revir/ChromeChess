@@ -10,9 +10,14 @@ var play = play || {};
 
 play.init = function(myRole) {
 	play.myRole = myRole;
+	var a2 = com.initMap;
+	play.competitor = 'black';
+	if(myRole === 'black'){
+		a2 = com.initMapBlackRole;
+		play.competitor = 'red';
+	}
 
 	play.my = 1; //玩家方
-	var a2 = myRole === 'red' ? com.initMap : com.initMapBlackRole;
 	play.map = com.arr2Clone(a2); //初始化棋盘
 	play.nowManKey = false; //现在要操作的棋子
 	play.pace = []; //记录每一步
@@ -23,6 +28,7 @@ play.init = function(myRole) {
 	play.showPane = com.showPane;
 	play.isOffensive = true; //是否先手
 	play.depth = play.depth || 3; //搜索深度
+	play.currentPlayer = null;  //current player, black or red;
 
 	play.isFoul = false; //是否犯规长将
 
@@ -42,9 +48,6 @@ play.init = function(myRole) {
 		}
 	}
 	play.show();
-	if (myRole === 'black') {
-		play.waitForCompetitor();
-	}
 };
 
 play.waitForCompetitor = function(){
@@ -54,6 +57,8 @@ play.waitForCompetitor = function(){
 			var newX = 8 - data.x;
 			var newY = 9 - data.y;
 			play.moveChess(data.nowManKey, newX, newY);
+			play.currentPlayer = play.myRole;
+			$('.pinfo').text(play.currentPlayer);
 		}
 	});
 };
@@ -194,10 +199,14 @@ play.moveChess = function(nowManKey, x, y) {
 play.clickPoint = function(x, y) {
 	var key = play.nowManKey;
 	var man = com.mans[key];
-	if (play.nowManKey) {
+	if (play.nowManKey && play.currentPlayer === play.myRole) {
 		if (play.indexOfPs(com.mans[key].ps, [x, y])) {
 			play.nowManKey = false;
 			play.moveChess(key, x, y);
+			play.currentPlayer = play.competitor;
+			//[temp]
+			$('.pinfo').text(play.currentPlayer);
+			play.waitForCompetitor();
 			// setTimeout("play.AIPlay()",500);
 		} else {
 			//alert("不能这么走哦！")	

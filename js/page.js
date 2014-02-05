@@ -13,6 +13,11 @@ window.onload = function() {
 
 function onSocketAcceptedCallback(acceptInfo) {
     $('.pinfo').text("对手已加入， 红方先手!");
+    play.currentPlayer = 'red';
+    $('.pinfo').text(play.currentPlayer);
+    if(play.myRole !== play.currentPlayer){
+        play.waitForCompetitor();
+    }
 }
 
 function onCreatedServerCallback(result) {
@@ -23,6 +28,11 @@ function onCreatedServerCallback(result) {
 function onConnectedToServerCallback(result){
     $('.pinfo').text("已加入棋局， 红方先手!");
     play.init('black');
+    play.currentPlayer = 'red';
+    $('.pinfo').text(play.currentPlayer);
+    if(play.myRole !== play.currentPlayer){
+        play.waitForCompetitor();
+    }
 }
 
 $(document).click(function(e) {
