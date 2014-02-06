@@ -100,10 +100,13 @@ $(document).click(function(e) {
     if (target.is('#startServer')) {
         rpc.createServer('0.0.0.0', 8776, onCreatedServerCallback, onSocketAcceptedCallback);
     } else if (target.is('#connectServer')) {
-        $('#connect-modal').modal();
-    } else if (target.is('#startConnect')) {
-        $('#connect-modal').modal('hide');
-        rpc.connect('192.168.1.105', 8776, onConnectedToServerCallback);
+        bootbox.prompt("IP地址: ", function(result) {
+            if (!result) {
+                bootbox.alert('请输入IP地址才能连接!');
+            } else {
+                rpc.connect(result, 8776, onConnectedToServerCallback);
+            }
+        });
     } else if (target.is('#restart')) {
         rpc.write({
             type: 'confirmRestart'

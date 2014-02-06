@@ -14,7 +14,7 @@ chrome.app.runtime.onLaunched.addListener(function() {
     chrome.app.window.create('index.html', {
         id: 'chrome_chess_index_html',
         minWidth: 800,
-        minHeight: 600
+        minHeight: 650
     });
 
 });
