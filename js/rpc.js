@@ -1,5 +1,6 @@
-var rpc = {};
-rpc.socketId = null;
+var rpc = rpc || {};
+// rpc.socketId = null;
+rpc.server_socketId = null;
 rpc.hooks = {};
 rpc._onConnectedCallback = function(result) {
     console.log('_onConnectedCallback');
@@ -18,7 +19,7 @@ rpc._onSocketAcceptedCallback = function(acceptInfo){
 
 rpc._onCreatedServerCallback = function(result){
     console.log('_onCreatedServerCallback');
-    chrome.socket.accept(rpc.socketId, rpc._onSocketAcceptedCallback);
+    chrome.socket.accept(rpc.server_socketId, rpc._onSocketAcceptedCallback);
     if(rpc.hooks.onCreatedServerCallback){
         rpc.hooks.onCreatedServerCallback(result);
     }
@@ -62,20 +63,22 @@ rpc.read = function(readCallback) {
     }
 };
 
-rpc.disconnect = function() {
-    if (rpc.socketId) {
-        chrome.socket.disconnect(rpc.socketId);
-        rpc.socketId = null;
+rpc.disconnect = function(socketId, server_socketId) {
+    if(server_socketId){
+        chrome.socket.destroy(server_socketId);
+    }
+    if (socketId) {
+        chrome.socket.destroy(socketId);
     }
 };
 
 rpc.createServer = function(ip, port, onCreatedServerCallback, onSocketAcceptedCallback) {
     rpc.hooks.onCreatedServerCallback = onCreatedServerCallback;
     rpc.hooks.onSocketAcceptedCallback = onSocketAcceptedCallback;
-    if (!rpc.socketId) {
+    if (!rpc.server_socketId) {
         chrome.socket.create('tcp', {}, function(createInfo) {
-            rpc.socketId = createInfo.socketId;
-            chrome.socket.listen(rpc.socketId, ip, port, rpc._onCreatedServerCallback);
+            rpc.server_socketId = createInfo.socketId;
+            chrome.socket.listen(rpc.server_socketId, ip, port, rpc._onCreatedServerCallback);
         });
     } else {
         //TODO:

@@ -8,33 +8,91 @@ window.onload = function() {
     com.mans = {}; //棋子集合
     com.createMans(com.initMap); //生成棋子  
     com.bg.show();
+
+    $('#restart').prop('disabled', true);
+    chrome.runtime.sendMessage({
+        type: 'getSocket'
+    }, function(result) {
+        rpc.disconnect(result.socketId, result.server_socketId);
+    });
     // com.get("bnBox").style.display = "block";
 };
 
 function onSocketAcceptedCallback(acceptInfo) {
     $('.pinfo').text("对手已加入， 红方先手!");
-    play.currentPlayer = 'red';
+    play.competitor = play.myRole === 'red' ? 'black' : 'red';
     $('.pinfo').text(play.currentPlayer);
-    if (play.myRole !== play.currentPlayer) {
-        play.waitForCompetitor();
-    }
+    $('#restart').prop('disabled', false);
+    rpc.read(onRpcCallback);
 }
 
 function onCreatedServerCallback(result) {
-    play.init('red');
-    $('.pinfo').text("棋局已摆好， 等待对手加入...");
+    if (result < 0) {
+        bootbox.alert('创建服务失败，请重启程序!');
+    } else {
+        play.init('red');
+        $('#startServer, #connectServer').prop('disabled', true);
+        $('.pinfo').text("棋局已摆好， 等待对手加入...");
+        chrome.runtime.sendMessage({
+            type: 'saveSocket',
+            server_socketId: rpc.server_socketId
+        });
+    }
 }
 
 function onConnectedToServerCallback(result) {
-    // if (result > 0) {
+    if (result < 0) {
+        bootbox.alert('连接服务器失败，请重启程序!');
+    } else {
         $('.pinfo').text("已加入棋局， 红方先手!");
         play.init('black');
-        play.currentPlayer = 'red';
+        play.competitor = play.myRole === 'red' ? 'black' : 'red';
+        $('#startServer, #connectServer').prop('disabled', true);
+        $('#restart').prop('disabled', false);
+
         $('.pinfo').text(play.currentPlayer);
-        if (play.myRole !== play.currentPlayer) {
-            play.waitForCompetitor();
+        rpc.read(onRpcCallback);
+    }
+}
+
+function onRpcCallback(data) {
+    if (data.type === 'confirmRestart') {
+        bootbox.confirm('对方请求重来一盘， 是否允许？', function(allow) {
+            if (allow) {
+                play.init(play.myRole);
+                play.competitor = play.myRole === 'red' ? 'black' : 'red';
+            }
+            rpc.write({
+                'type': 'restart',
+                'allow': allow
+            });
+        });
+    } else if (data.type === 'restart') {
+        bootbox.hideAll();
+        if (data.allow) {
+            play.init(play.myRole);
+            play.competitor = play.myRole === 'red' ? 'black' : 'red';
+        } else {
+            bootbox.alert('对方不同意重来一盘！');
         }
-    // }
+    } else if (data.type === 'move') {
+        var newX = 8 - data.x;
+        var newY = 9 - data.y;
+        play.moveChess(data.nowManKey, newX, newY);
+        play.currentPlayer = play.myRole;
+        $('.pinfo').text(play.currentPlayer);
+
+    } else if (data.type === 'eat') {
+        var newX2 = 8 - data.x;
+        var newY2 = 9 - data.y;
+        play.eatChess(data.nowManKey, data.key, newX2, newY2);
+        play.currentPlayer = play.myRole;
+        $('.pinfo').text(play.currentPlayer);
+    } else if (data.type === 'closed') {
+        rpc.disconnect(rpc.socketId, rpc.server_socketId);
+        bootbox.alert('对方已退出棋局!');
+    }
+    rpc.read(onRpcCallback);
 }
 
 $(document).click(function(e) {
@@ -46,10 +104,10 @@ $(document).click(function(e) {
     } else if (target.is('#startConnect')) {
         $('#connect-modal').modal('hide');
         rpc.connect('192.168.1.105', 8776, onConnectedToServerCallback);
-    } else if (target.is('#disconnect')) {
-        rpc.disconnect();
-        alert('disconnect');
-
+    } else if (target.is('#restart')) {
+        rpc.write({
+            type: 'confirmRestart'
+        });
     } else if (target.is('#stypeBn')) {
         // var stype =com.nowStype;
         // if (stype=="stype1") stype="stype2";
@@ -69,3 +127,10 @@ $(document).click(function(e) {
         play.clickCanvas(e);
     }
 });
+// chrome.app.window.current().onClosed.addListener(function() {
+//     rpc.write({
+//         type: 'closed'
+//     }, function() {
+
+//     });
+// });

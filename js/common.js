@@ -11,7 +11,7 @@ var com = com||{};
 
 com.init = function (stype){
 	
-	com.nowStype= stype || com.getCookie("stype") ||"stype1";
+	com.nowStype= stype || com.getCookie("stype") ||"stype2";
 	var stype = com.stype[com.nowStype];
 	com.width			=	stype.width;		//画布宽度
 	com.height			=	stype.height; 		//画布高度
@@ -123,7 +123,7 @@ com.createMove = function (map,x,y,newX,newY){
 	h+= man.text;
 	map[newY][newX] = map[y][x];
 	delete map[y][x];
-	if (man.my===1){
+	if (man.role===play.myRole){
 		var mumTo=["一","二","三","四","五","六","七","八","九","十"];	
 		newX=8-newX;
 		h+= mumTo[8-x];

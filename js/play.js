@@ -11,14 +11,9 @@ var play = play || {};
 play.init = function(myRole) {
 	play.myRole = myRole;
 	var a2 = com.initMap;
-	play.competitor = 'black';
-	if (myRole === 'black') {
-		a2 = com.initMapBlackRole;
-		play.competitor = 'red';
-	}
-
+	play.competitor = null;
 	play.my = 1; //玩家方
-	play.map = com.arr2Clone(a2); //初始化棋盘
+	play.map = com.arr2Clone(myRole === 'red'?com.initMap: com.initMapBlackRole); //初始化棋盘
 	play.nowManKey = false; //现在要操作的棋子
 	play.pace = []; //记录每一步
 	play.isPlay = true; //是否能走棋
@@ -28,7 +23,7 @@ play.init = function(myRole) {
 	play.showPane = com.showPane;
 	play.isOffensive = true; //是否先手
 	play.depth = play.depth || 3; //搜索深度
-	play.currentPlayer = null; //current player, black or red;
+	play.currentPlayer = 'red'; //current player, black or red;
 
 	play.isFoul = false; //是否犯规长将
 
@@ -48,23 +43,6 @@ play.init = function(myRole) {
 		}
 	}
 	play.show();
-};
-
-play.waitForCompetitor = function() {
-	rpc.read(function(data) {
-		$('.pinfo').text(JSON.stringify(data));
-		var newX = 8 - data.x;
-		var newY = 9 - data.y;
-		if (data.type === 'move') {
-			play.moveChess(data.nowManKey, newX, newY);
-
-		} else if (data.type === 'eat') {
-			play.eatChess(data.nowManKey, data.key, newX, newY);
-		}
-
-		play.currentPlayer = play.myRole;
-		$('.pinfo').text(play.currentPlayer);
-	});
 };
 
 //悔棋
@@ -117,7 +95,7 @@ play.regret = function() {
 
 //点击棋盘事件
 play.clickCanvas = function(e) {
-	if (!play.isPlay) return false;
+	if (!play.isPlay || !play.competitor) return false;
 	var key = play.getClickMan(e);
 	var point = play.getClickPoint(e);
 
@@ -170,12 +148,11 @@ play.eatChess = function(nowManKey, key, x, y){
 play.clickMan = function(key, x, y) {
 	var man = com.mans[key];
 	//吃子
-	if (play.nowManKey && play.nowManKey != key && man.my != com.mans[play.nowManKey].my) {
+	if (play.nowManKey && play.nowManKey != key && man.role != com.mans[play.nowManKey].role) {
 		if (play.indexOfPs(com.mans[play.nowManKey].ps, [x, y])) {
 			if (play.currentPlayer === play.myRole) {
 				play.eatChess(play.nowManKey, key, x, y);
 				play.currentPlayer = play.competitor;
-				play.waitForCompetitor();
 			}
 		}
 		// 选中棋子
@@ -231,7 +208,6 @@ play.clickPoint = function(x, y) {
 			play.currentPlayer = play.competitor;
 			//[temp]
 			$('.pinfo').text(play.currentPlayer);
-			play.waitForCompetitor();
 			// setTimeout("play.AIPlay()",500);
 		} else {
 			//alert("不能这么走哦！")	

@@ -27,16 +27,16 @@
 	<div class="chess_right">
 		<div class="bn_box" id="bnBox">
 			<!-- <input type="button" name="offensivePlay" id="startServer" value="startServer" /> -->
-			<button class="btn btn-primary" id="startServer">startServer</button>
+			<button class="btn btn-primary" id="startServer">我来开棋</button>
 			<!-- <input type="button" name="offensivePlay" id="connectServer" value="connectServer" /> -->
-			<button class="btn btn-primary" data-toggle="modal" data-target="#connect-modal">
-  				connectServer
+			<button class="btn btn-primary" id="connectServer" data-toggle="modal" data-target="#connect-modal">
+  				连接棋局
 			</button>
-			<button class="btn btn-primary" id="stypeBn">换肤</button>
-			<button class="btn btn-primary" id="disconnect">
-  				disconnect
+			<!-- <button class="btn btn-primary" id="stypeBn">换肤</button> -->
+			<button class="btn btn-primary" id="restart">
+  				重来一盘
 			</button>
-			<p class="pinfo">选择摆棋局还是加入棋局?</p>
+			<p class="pinfo">选择开棋还是加入棋局?</p>
             <!--<input type="button" name="button" id="" value="大师水平" disabled />
 			
 		<input type="button" name="offensivePlay" id="offensivePlay" value="先手开始" />
@@ -80,6 +80,7 @@
 	<!-- <div id="moveInfo" class="move_info"> </div> -->
 <script type="text/javascript" src="lib/jquery-1.10.2.js"></script>
 <script type="text/javascript" src="lib/bootstrap.js"></script>
+<script type="text/javascript" src="lib/bootbox.js"></script>
 <script type="text/javascript" src="js/rpc.js"></script>
 <script type="text/javascript" src="js/utils.js"></script>
 <script type="text/javascript" src="js/values.js"></script>
