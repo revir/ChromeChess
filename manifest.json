@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
-    "name": "ChromeChess",
-    "description": "chrome chess",
+    "name": "ChineseChess",
+    "description": "中国象棋，局域网对战游戏",
     "permissions": [{
         "socket": [
             "tcp-connect:*:8776",
