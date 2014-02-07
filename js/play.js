@@ -96,6 +96,7 @@ play.regret = function() {
 play.setMoveInfo = function(man, x, y, newX, newY){
 	var info = com.getMoveString(man, x, y, newX, newY);
 	$('.pinfo').append('<h3><b style="color:'+man.role+';">'+info+'</b></h3>');
+	$('.pinfo').scrollTop($('.pinfo')[0].scrollHeight);
 };
 
 //点击棋盘事件
@@ -123,7 +124,6 @@ play.eatChess = function(nowManKey, key, x, y) {
 	var pace = com.mans[play.nowManKey].x + "" + com.mans[play.nowManKey].y
 
 	play.setMoveInfo(com.mans[play.nowManKey], com.mans[play.nowManKey].x, com.mans[play.nowManKey].y, x, y);
-	$('.pinfo').append('<p>'+moveStr+'</p>');
 	//z(bill.createMove(play.map,man.x,man.y,x,y))
 	delete play.map[com.mans[play.nowManKey].y][com.mans[play.nowManKey].x];
 	play.map[y][x] = play.nowManKey;
