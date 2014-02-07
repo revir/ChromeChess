@@ -13,7 +13,7 @@ chrome.app.runtime.onLaunched.addListener(function() {
     // Tell your app what to launch and how.
     chrome.app.window.create('index.html', {
         id: 'chrome_chess_index_html',
-        minWidth: 800,
+        minWidth: 1000,
         minHeight: 650
     });
 

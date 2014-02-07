@@ -7,11 +7,23 @@
  */
 
 @charset "gb2312";
-body{  font-size: 12px; line-height: 150%; }
-.box { margin:0 auto; width:460px; position: relative; }
-.chess_left {float:left; text-align:center }
-.chess_right {  float:left;}
-.move_info {  float:left; margin-top:20px}
+.chess-left {
+    margin-left: 15px;
+    margin-top: 15px;
+    width: 540px;
+}
+.chess-right {
+    margin-top: 15px;
+}
+.pinfo {
+    font-size: 14px; 
+    line-height: 150%;
+    color: blue;
+}
+.pinfo * {
+    margin-top: 3px;
+    margin-bottom: 3px;
+}
 
 .bill_box{ height: 320px; width: 80px; overflow:auto;}
 .bill_box li { cursor:pointer; text-align:left}

@@ -13,7 +13,7 @@ play.init = function(myRole) {
 	var a2 = com.initMap;
 	play.competitor = null;
 	play.my = 1; //玩家方
-	play.map = com.arr2Clone(myRole === 'red'?com.initMap: com.initMapBlackRole); //初始化棋盘
+	play.map = com.arr2Clone(myRole === 'red' ? com.initMap : com.initMapBlackRole); //初始化棋盘
 	play.nowManKey = false; //现在要操作的棋子
 	play.pace = []; //记录每一步
 	play.isPlay = true; //是否能走棋
@@ -91,7 +91,12 @@ play.regret = function() {
 	play.my = 1;
 	play.isPlay = true;
 	com.show();
-}
+};
+
+play.setMoveInfo = function(man, x, y, newX, newY){
+	var info = com.getMoveString(man, x, y, newX, newY);
+	$('.pinfo').append('<h3><b style="color:'+man.role+';">'+info+'</b></h3>');
+};
 
 //点击棋盘事件
 play.clickCanvas = function(e) {
@@ -110,12 +115,15 @@ play.clickCanvas = function(e) {
 	play.isFoul = play.checkFoul(); //检测是不是长将
 };
 
-play.eatChess = function(nowManKey, key, x, y){
+play.eatChess = function(nowManKey, key, x, y) {
 	//man为被吃掉的棋子
 	var man = com.mans[key];
 	play.nowManKey = nowManKey;
 	man.isShow = false;
 	var pace = com.mans[play.nowManKey].x + "" + com.mans[play.nowManKey].y
+
+	play.setMoveInfo(com.mans[play.nowManKey], com.mans[play.nowManKey].x, com.mans[play.nowManKey].y, x, y);
+	$('.pinfo').append('<p>'+moveStr+'</p>');
 	//z(bill.createMove(play.map,man.x,man.y,x,y))
 	delete play.map[com.mans[play.nowManKey].y][com.mans[play.nowManKey].x];
 	play.map[y][x] = play.nowManKey;
@@ -139,6 +147,7 @@ play.eatChess = function(nowManKey, key, x, y){
 			y: y
 		});
 	}
+	
 	// setTimeout("play.AIPlay()", 500);
 	// if (key == "j0") play.showWin(-1);
 	// if (key == "J0") play.showWin(1);
@@ -169,13 +178,15 @@ play.clickMan = function(key, x, y) {
 			com.get("selectAudio").play();
 		}
 	}
-}
+};
 
 //Just move the chess, no eat
 play.moveChess = function(nowManKey, x, y) {
 	var key = nowManKey;
 	var man = com.mans[key];
-	var pace = man.x + "" + man.y
+	var pace = man.x + "" + man.y;
+
+	play.setMoveInfo(man, man.x, man.y, x, y);
 	//z(bill.createMove(play.map,man.x,man.y,x,y))
 	delete play.map[man.y][man.x];
 	play.map[y][x] = key;
@@ -207,7 +218,6 @@ play.clickPoint = function(x, y) {
 			play.moveChess(key, x, y);
 			play.currentPlayer = play.competitor;
 			//[temp]
-			$('.pinfo').text(play.currentPlayer);
 			// setTimeout("play.AIPlay()",500);
 		} else {
 			//alert("不能这么走哦！")	

@@ -21,7 +21,7 @@ com.init = function (stype){
 	com.pointStartY		=	stype.pointStartY;	//第一个着点Y坐标;
 	com.page			=	stype.page;			//图片目录
 	
-	com.get("box").style.width = com.width+130+"px";
+	// com.get("box").style.width = com.width+130+"px";
 	
 	com.canvas			=	document.getElementById("chess"); //画布
 	com.ct				=	com.canvas.getContext("2d") ; 
@@ -114,7 +114,42 @@ com.createMans = function(map){
 			}
 		}
 	}
-}
+};
+
+com.getMoveString = function(man, x, y, newX, newY) {
+	var h = "";
+	h += man.text;
+	if(man.role !== play.myRole){
+		x = 8 - x;
+		newX = 8 - newX;
+		y = 9 - y;
+		newY = 9 - newY;
+	}
+	var numTo = ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十"];
+	if(man.role === 'black')
+		numTo = ["１", "２", "３", "４", "５", "６", "７", "８", "９", "10"];
+
+	h += numTo[x];
+	if (newY > y) {
+		h += "退";
+		if (man.pater == "m" || man.pater == "s" || man.pater == "x") {
+			h += numTo[newX];
+		} else {
+			h += numTo[newY - y - 1];
+		}
+	} else if (newY < y) {
+		h += "进";
+		if (man.pater == "m" || man.pater == "s" || man.pater == "x") {
+			h += numTo[newX];
+		} else {
+			h += numTo[y - newY - 1];
+		}
+	} else {
+		h += "平";
+		h += numTo[newX];
+	}
+	return h;
+};
 
 //把坐标生成着法
 com.createMove = function (map,x,y,newX,newY){
@@ -123,7 +158,7 @@ com.createMove = function (map,x,y,newX,newY){
 	h+= man.text;
 	map[newY][newX] = map[y][x];
 	delete map[y][x];
-	if (man.role===play.myRole){
+	if (man.role==='red'){
 		var mumTo=["一","二","三","四","五","六","七","八","九","十"];	
 		newX=8-newX;
 		h+= mumTo[8-x];

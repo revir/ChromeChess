@@ -19,20 +19,19 @@ window.onload = function() {
 };
 
 function onSocketAcceptedCallback(acceptInfo) {
-    $('.pinfo').text("对手已加入， 红方先手!");
+    $('.pinfo').append("<p>对手已加入， 红方先手!</p>");
     play.competitor = play.myRole === 'red' ? 'black' : 'red';
-    $('.pinfo').text(play.currentPlayer);
     $('#restart').prop('disabled', false);
     rpc.read(onRpcCallback);
 }
 
 function onCreatedServerCallback(result) {
     if (result < 0) {
-        bootbox.alert('创建服务失败，请重启程序!');
+        bootbox.alert('创建服务失败，请重试！');
     } else {
         play.init('red');
         $('#startServer, #connectServer').prop('disabled', true);
-        $('.pinfo').text("棋局已摆好， 等待对手加入...");
+        $('.pinfo').append("<p>棋局已摆好， 等待对手加入...</p>");
         chrome.runtime.sendMessage({
             type: 'saveSocket',
             server_socketId: rpc.server_socketId
@@ -42,15 +41,14 @@ function onCreatedServerCallback(result) {
 
 function onConnectedToServerCallback(result) {
     if (result < 0) {
-        bootbox.alert('连接服务器失败，请重启程序!');
+        bootbox.alert('连接服务器失败，请重试！');
     } else {
-        $('.pinfo').text("已加入棋局， 红方先手!");
+        $('.pinfo').append("<p>已加入棋局， 红方先手!</p>");
         play.init('black');
         play.competitor = play.myRole === 'red' ? 'black' : 'red';
         $('#startServer, #connectServer').prop('disabled', true);
         $('#restart').prop('disabled', false);
 
-        $('.pinfo').text(play.currentPlayer);
         rpc.read(onRpcCallback);
     }
 }
@@ -80,14 +78,12 @@ function onRpcCallback(data) {
         var newY = 9 - data.y;
         play.moveChess(data.nowManKey, newX, newY);
         play.currentPlayer = play.myRole;
-        $('.pinfo').text(play.currentPlayer);
 
     } else if (data.type === 'eat') {
         var newX2 = 8 - data.x;
         var newY2 = 9 - data.y;
         play.eatChess(data.nowManKey, data.key, newX2, newY2);
         play.currentPlayer = play.myRole;
-        $('.pinfo').text(play.currentPlayer);
     } else if (data.type === 'closed') {
         rpc.disconnect(rpc.socketId, rpc.server_socketId);
         bootbox.alert('对方已退出棋局!');
