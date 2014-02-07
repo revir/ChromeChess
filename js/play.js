@@ -26,9 +26,6 @@ play.init = function(myRole) {
 	play.currentPlayer = 'red'; //current player, black or red;
 
 	play.isFoul = false; //是否犯规长将
-
-
-
 	com.pane.isShow = false; //隐藏方块
 
 	//初始化棋子
