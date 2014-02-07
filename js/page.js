@@ -57,6 +57,7 @@ function onRpcCallback(data) {
     if (data.type === 'confirmRestart') {
         bootbox.confirm('对方请求重来一盘， 是否允许？', function(allow) {
             if (allow) {
+                $('.pinfo').html('');
                 play.init(play.myRole);
                 play.competitor = play.myRole === 'red' ? 'black' : 'red';
             }
@@ -68,6 +69,7 @@ function onRpcCallback(data) {
     } else if (data.type === 'restart') {
         bootbox.hideAll();
         if (data.allow) {
+            $('.pinfo').html('');
             play.init(play.myRole);
             play.competitor = play.myRole === 'red' ? 'black' : 'red';
         } else {
@@ -78,7 +80,6 @@ function onRpcCallback(data) {
         var newY = 9 - data.y;
         play.moveChess(data.nowManKey, newX, newY);
         play.currentPlayer = play.myRole;
-
     } else if (data.type === 'eat') {
         var newX2 = 8 - data.x;
         var newY2 = 9 - data.y;
@@ -107,6 +108,7 @@ $(document).click(function(e) {
         rpc.write({
             type: 'confirmRestart'
         });
+        bootbox.alert('等待对方确认重来一盘！');
     } else if (target.is('#stypeBn')) {
         // var stype =com.nowStype;
         // if (stype=="stype1") stype="stype2";

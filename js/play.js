@@ -134,7 +134,7 @@ play.eatChess = function(nowManKey, key, x, y) {
 	com.pane.isShow = false;
 	com.dot.dots = [];
 	com.show();
-	com.get("clickAudio").play();
+	com.get("captureAudio").play();
 	if (play.myRole === play.currentPlayer) {
 		rpc.write({
 			type: 'eat',
@@ -194,7 +194,7 @@ play.moveChess = function(nowManKey, x, y) {
 	play.pace.push(pace + x + y);
 	com.dot.dots = [];
 	com.show();
-	com.get("clickAudio").play();
+	com.get("moveAudio").play();
 	if (play.currentPlayer === play.myRole) {
 		rpc.write({
 			type: 'move',
@@ -214,8 +214,6 @@ play.clickPoint = function(x, y) {
 			play.nowManKey = false;
 			play.moveChess(key, x, y);
 			play.currentPlayer = play.competitor;
-			//[temp]
-			// setTimeout("play.AIPlay()",500);
 		} else {
 			//alert("不能这么走哦！")	
 		}
@@ -242,7 +240,7 @@ play.AIPlay = function() {
 	} else {
 		play.AIclickPoint(pace[2], pace[3]);
 	}
-	com.get("clickAudio").play();
+	// com.get("clickAudio").play();
 
 
 }
